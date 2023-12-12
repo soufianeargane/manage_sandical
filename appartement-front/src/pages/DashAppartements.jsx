@@ -9,6 +9,7 @@ function DashAppartements() {
     const [inserted, setInserted] = useState(false);
     const [updateModalOpen, setUpdateModalOpen] = useState(false);
     useEffect(() => {
+        document.title = "Appartements";
         async function getApartments() {
             try {
                 let result = await axiosInstance.get("api/appartement/", {
