@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import store from "./slices/store";
 import RootLayout from "./layouts/RootLayout";
 import DashAppartements from "./pages/DashAppartements";
+import DashPayments from "./pages/DashPayments";
 import { Login } from "./pages/Login";
 
 function App() {
@@ -12,13 +13,19 @@ function App() {
             <Router>
                 <Routes>
                     <Route path="/login" element={<Login />} />
-                    <Route path="/dash" element={<RootLayout />}>
+                    <Route path="/dash/" element={<RootLayout />}>
                         <Route
                             path="appartements"
                             element={
                                 <AuthorizedRoute
                                     element={<DashAppartements />}
                                 />
+                            }
+                        />
+                        <Route
+                            path="payments"
+                            element={
+                                <AuthorizedRoute element={<DashPayments />} />
                             }
                         />
                     </Route>
