@@ -10,6 +10,8 @@ function DashPayments() {
     const [unPaidApartments, setUnPaidApartments] = useState([]);
     const [updateModalOpen, setUpdateModalOpen] = useState(false);
     const [selectedAppartement, setSelectedAppartement] = useState(null);
+    const paidTableRef = useRef(null);
+    const nonPaidTableRef = useRef(null);
     useEffect(() => {
         document.title = "Payments";
 
@@ -43,16 +45,31 @@ function DashPayments() {
 
         // Add content to the PDF
         doc.text("Paid Apartments", 10, 10);
+
+        // Remove last column (Action) from the paidTable
+        const paidTableClone = paidTableRef.current.cloneNode(true);
+        paidTableClone.querySelector("thead tr").deleteCell(-1);
+        Array.from(paidTableClone.querySelectorAll("tbody tr")).forEach((row) =>
+            row.deleteCell(-1)
+        );
+
         doc.autoTable({
-            html: "#paidTable",
-            columnStyles: { 4: { cellWidth: 0 } },
+            html: paidTableClone,
         });
 
+        // Add spacing between tables
         doc.text("Non-Paid Apartments", 10, doc.autoTable.previous.finalY + 20);
+
+        // Remove last column (Action) from the nonPaidTable
+        const nonPaidTableClone = nonPaidTableRef.current.cloneNode(true);
+        nonPaidTableClone.querySelector("thead tr").deleteCell(-1);
+        Array.from(nonPaidTableClone.querySelectorAll("tbody tr")).forEach(
+            (row) => row.deleteCell(-1)
+        );
+
         doc.autoTable({
-            html: "#nonPaidTable",
+            html: nonPaidTableClone,
             startY: doc.autoTable.previous.finalY + 25,
-            columnStyles: { 4: { cellWidth: 0 } },
         });
 
         // Save the PDF
@@ -66,6 +83,7 @@ function DashPayments() {
                     <div className="mt-4">
                         <div className="relative w-full overflow-x-auto px-12 ">
                             <table
+                                ref={nonPaidTableRef}
                                 id="nonPaidTable"
                                 className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-2"
                             >
@@ -146,6 +164,7 @@ function DashPayments() {
                         <div className="relative w-full overflow-x-auto px-12 ">
                             <table
                                 id="paidTable"
+                                ref={paidTableRef}
                                 className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-2"
                             >
                                 <thead className="text-xs text-center text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
