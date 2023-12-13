@@ -1,5 +1,6 @@
 const PaymentModel = require("../models/PaymentModel");
 const AppartementModel = require("../models/AppartementModel");
+const PDFDocument = require("pdfkit");
 
 const createPayment = async (req, res) => {
     try {
@@ -57,7 +58,58 @@ const getPaymentsByMonth = async (req, res) => {
     }
 };
 
+const getSinglePayment = async (req, res) => {
+    try {
+        const today = new Date();
+        const month = today.getMonth() + 1;
+        const year = today.getFullYear();
+        // apartmentId
+        const payment_id = req.params.id;
+        // Fetch all apartments
+        const allApartments = await AppartementModel.find();
+        // Fetch paid apartments for the current month
+        const payment = await PaymentModel.find({
+            _id: payment_id,
+            month,
+            year,
+            apartment: { $in: allApartments.map((apartment) => apartment._id) },
+        }).populate("apartment");
+
+        if (!payment) {
+            return res.status(404).send("Payment not found");
+        }
+        const apartment = payment[0].apartment;
+
+        // Create a new PDF document
+        const doc = new PDFDocument();
+
+        // Set response headers
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+            "Content-Disposition",
+            `attachment; filename=facture_${apartment.number}.pdf`
+        );
+
+        // Pipe the PDF to the response
+        doc.pipe(res);
+
+        // Add content to the PDF
+        doc.fontSize(16).text("Facture Bill", { align: "center" }).moveDown();
+        doc.fontSize(12).text(`Owner: ${apartment.owner}`);
+        doc.text(`Building: ${apartment.building}`);
+        doc.text(`Apartment Number: ${apartment.number}`);
+        doc.text(`Status: ${apartment.status}`);
+        doc.text(`Amount: $${payment[0].amount}`);
+
+        // Finalize the PDF
+        doc.end();
+    } catch (error) {
+        console.error(error);
+    }
+};
+
 module.exports = {
     createPayment,
     getPaymentsByMonth,
+    getSinglePayment,
 };

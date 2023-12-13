@@ -5,4 +5,5 @@ const checkTokenMiddleware = require("../middlewares/tokenMiddleware");
 
 router.post("/create", checkTokenMiddleware, paymentController.createPayment);
 router.get("/payments-by-month", paymentController.getPaymentsByMonth);
+router.get("/single-payment/:id", paymentController.getSinglePayment);
 module.exports = router;
