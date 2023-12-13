@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axiosInstance from "../api/axiosInstance";
 import PayModal from "../components/shared/PayModal";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
 
 function DashPayments() {
     const [paidApartments, setPaidApartments] = useState([]);
@@ -35,6 +37,27 @@ function DashPayments() {
         setSelectedAppartement(apartment);
         setUpdateModalOpen(true);
     };
+
+    const generatePDF = () => {
+        const doc = new jsPDF();
+
+        // Add content to the PDF
+        doc.text("Paid Apartments", 10, 10);
+        doc.autoTable({
+            html: "#paidTable",
+            columnStyles: { 4: { cellWidth: 0 } },
+        });
+
+        doc.text("Non-Paid Apartments", 10, doc.autoTable.previous.finalY + 20);
+        doc.autoTable({
+            html: "#nonPaidTable",
+            startY: doc.autoTable.previous.finalY + 25,
+            columnStyles: { 4: { cellWidth: 0 } },
+        });
+
+        // Save the PDF
+        doc.save("apartments_report.pdf");
+    };
     return (
         <div className="px-8 py-2">
             <div>
@@ -42,7 +65,10 @@ function DashPayments() {
                     <h3>Non Paid Appartements For The current Month </h3>
                     <div className="mt-4">
                         <div className="relative w-full overflow-x-auto px-12 ">
-                            <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-2">
+                            <table
+                                id="nonPaidTable"
+                                className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-2"
+                            >
                                 <thead className="text-xs text-center text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                     <tr>
                                         <th scope="col" className="px-6 py-3">
@@ -118,7 +144,10 @@ function DashPayments() {
                     <h3>Paid Appartements For The current Month</h3>
                     <div className="mt-4">
                         <div className="relative w-full overflow-x-auto px-12 ">
-                            <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-2">
+                            <table
+                                id="paidTable"
+                                className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-2"
+                            >
                                 <thead className="text-xs text-center text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                     <tr>
                                         <th scope="col" className="px-6 py-3">
@@ -185,6 +214,12 @@ function DashPayments() {
                     </div>
                 </div>
             </div>
+            <button
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full"
+                onClick={generatePDF}
+            >
+                Generate PDF
+            </button>
         </div>
     );
 }
