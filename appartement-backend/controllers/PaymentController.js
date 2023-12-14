@@ -108,14 +108,10 @@ const getSinglePayment = async (req, res) => {
             .text(`${today.toLocaleDateString()}`, 200, 230)
             .fontSize(15)
             .font("Helvetica-Bold")
-            .text("Owner:", 400, 200, { align: "right" })
-            .text(`${apartment.owner}`, 550, 200, {
-                align: "right",
-            })
-            .text("Status:", 400, 225, { align: "right" })
-            .text(`${apartment.status}`, 550, 225, {
-                align: "right",
-            });
+            .text("Owner:", 300, 200)
+            .text(`${apartment.owner}`, 370, 200)
+            .text("Status:", 300, 225)
+            .text(`${apartment.status}`, 370, 225);
 
         doc.moveDown();
 
@@ -141,7 +137,7 @@ function generateHeader(doc) {
 }
 
 function generateTable(doc, payment) {
-    const tableTop = 250;
+    const tableTop = 350;
 
     doc.font("Helvetica-Bold");
     doc.fontSize(12).text("Amount Paid", 50, tableTop);

@@ -10,8 +10,13 @@ const createAppartement = async (req, res) => {
     }
 };
 const getAllAppartements = async (req, res) => {
-    const appartement = await AppartementModel.find({});
-    return res.json({ status: true, data: appartement });
+    try {
+        const appartement = await AppartementModel.find({});
+        return res.json({ status: true, data: appartement });
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({ error: "Something went wrong" });
+    }
 };
 const getAppartementById = async (req, res) => {
     const { id } = req.params;

@@ -29,21 +29,7 @@ describe("Test loginTest function", () => {
         // check if res.json is called with { error: 'Email is required' }
         expect(res.json).toHaveBeenCalledWith({ error: '"email" is required' });
     });
-    it("should return 400 if password is not provided", async () => {
-        // define req and res
-        const req = {
-            body: {
-                email: "test@test.com",
-            },
-        };
-        const res = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn(),
-        };
-        jest.spyOn(validateForms, "validateLogin").mockReturnValue({
-            error: { details: [{ message: '"password" is required' }] },
-        });
-    });
+
     it("should return 400 if user is not found in the database", async () => {
         // define req and res
         const req = {
@@ -56,13 +42,13 @@ describe("Test loginTest function", () => {
             status: jest.fn().mockReturnThis(),
             json: jest.fn(),
         };
+
         jest.spyOn(validateForms, "validateLogin").mockReturnValue({
             error: null,
         });
-        // mock findOne with populate to return null
-        UserModel.findOne = jest
-            .fn()
-            .mockReturnValue({ populate: jest.fn().mockReturnValue(null) });
+
+        // mock findOne to return null
+        UserModel.findOne = jest.fn().mockReturnValue(null);
 
         // call the function
         await loginTest(req, res);
@@ -70,6 +56,7 @@ describe("Test loginTest function", () => {
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({ error: "Email is not found" });
     });
+
     it("should return 400 if password is invalid", async () => {
         // define req and res
         const req = {
@@ -86,10 +73,10 @@ describe("Test loginTest function", () => {
         jest.spyOn(validateForms, "validateLogin").mockReturnValue({
             error: null,
         });
-        // mock findOne with populate to return object user
-        UserModel.findOne = jest
-            .fn()
-            .mockReturnValue({ populate: jest.fn().mockReturnValue({}) });
+
+        // mock findOne to return user object
+        UserModel.findOne = jest.fn().mockReturnValue({});
+
         // mock compare to return false
         bcryptjs.compare = jest.fn().mockReturnValue(false);
 
@@ -99,66 +86,33 @@ describe("Test loginTest function", () => {
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({ error: "Invalid password" });
     });
-    it("should return 400 if user is not verified", async () => {
+
+    it("should call res.cookie and res.json with correct data if login is successful", async () => {
+        // define req and res
         const req = {
             body: {
                 email: "test@gmail.com",
                 password: "123456",
             },
-        };
-        const res = {
-            status: jest.fn().mockReturnThis(),
-            json: jest.fn(),
-        };
-
-        jest.spyOn(validateForms, "validateLogin").mockReturnValue({
-            error: null,
-        });
-        // mock findOne with populate to return object user
-        UserModel.findOne = jest.fn().mockReturnValue({
-            populate: jest.fn().mockReturnValue({
-                is_verified: false,
-            }),
-        });
-        // mock compare to return false
-        bcryptjs.compare = jest.fn().mockReturnValue(true);
-
-        // call the function
-        await loginTest(req, res);
-
-        expect(res.status).toHaveBeenCalledWith(401);
-        expect(res.json).toHaveBeenCalledWith({
-            error: "Please verify your email",
-        });
-    });
-    it("should call res.redirect with /api/user/manager/me if user role is manager", async () => {
-        const req = {
-            body: {
-                email: "test@gmail.com",
-                password: "123456",
-            },
-            // mock cookie
         };
         const res = {
             status: jest.fn().mockReturnThis(),
             json: jest.fn(),
             cookie: jest.fn(),
-            redirect: jest.fn(),
         };
 
         jest.spyOn(validateForms, "validateLogin").mockReturnValue({
             error: null,
         });
-        // mock findOne with populate to return object user
+
+        // mock findOne to return user object
         UserModel.findOne = jest.fn().mockReturnValue({
-            populate: jest.fn().mockReturnValue({
-                is_verified: true,
-                role: {
-                    name: "manager",
-                },
-            }),
+            _id: "user_id",
+            name: "John Doe",
+            email: "test@gmail.com",
         });
-        // mock compare to return false
+
+        // mock compare to return true
         bcryptjs.compare = jest.fn().mockReturnValue(true);
 
         // mock sign to return token
@@ -167,16 +121,18 @@ describe("Test loginTest function", () => {
         // call the function
         await loginTest(req, res);
 
-        // expect(res.redirect).toHaveBeenCalledWith("/api/user/manager/me");
+        expect(res.cookie).toHaveBeenCalledWith("authToken", "token", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+        });
 
-        // expect this: res.json({ success: "Logged in successfully", user: returnUser });
         expect(res.json).toHaveBeenCalledWith({
             success: "Logged in successfully",
             user: {
-                _id: undefined,
-                name: undefined,
-                email: undefined,
-                role: "manager",
+                _id: "user_id",
+                name: "John Doe",
+                email: "test@gmail.com",
             },
         });
     });

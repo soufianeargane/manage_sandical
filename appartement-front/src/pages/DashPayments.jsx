@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import axiosInstance from "../api/axiosInstance";
 import PayModal from "../components/shared/PayModal";
+import EditIcon from "@mui/icons-material/Edit";
+import LocalPrintshopIcon from "@mui/icons-material/LocalPrintshop";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 
@@ -74,6 +76,11 @@ function DashPayments() {
 
         // Save the PDF
         doc.save("apartments_report.pdf");
+    };
+
+    const handleButtonClick = (appartmentId) => {
+        const url = `http://localhost:3000/api/payment/single-payment/${appartmentId}`;
+        window.open(url, "_blank"); // Opens the URL in a new tab
     };
     return (
         <div className="px-8 py-2">
@@ -218,10 +225,24 @@ function DashPayments() {
                                                     {appartement.amount}
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <div className="flex justify-center gap-1">
-                                                        <button className="bg-red-600 hover:bg-red-700 text-xs text-white font-bold py-2 px-4 rounded-full">
-                                                            Edit amount
-                                                        </button>
+                                                    <div className="flex justify-center gap-3">
+                                                        <div>
+                                                            <button className="hover:text-blue-500 px-2 py-1 hover:bg-gray-100 rounded-full">
+                                                                <EditIcon />
+                                                            </button>
+                                                        </div>
+                                                        <div>
+                                                            <button
+                                                                className="hover:text-red-500 px-2 py-1 hover:bg-black rounded-full"
+                                                                onClick={() =>
+                                                                    handleButtonClick(
+                                                                        appartement._id
+                                                                    )
+                                                                }
+                                                            >
+                                                                <LocalPrintshopIcon />
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </td>
                                             </tr>
