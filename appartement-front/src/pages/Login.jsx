@@ -97,7 +97,8 @@ export const Login = () => {
                     {error && (
                         <Alert severity="error">
                             <AlertTitle>Error</AlertTitle>
-                            {error}
+                            {/* {error} */}
+                            Invalid credentials
                         </Alert>
                     )}
                     <div>

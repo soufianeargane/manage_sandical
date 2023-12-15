@@ -22,6 +22,10 @@ function DashAppartements() {
         }
 
         getApartments();
+
+        return () => {
+            console.log("cleaned up");
+        };
     }, [inserted]);
 
     const deleteAppartement = async (id) => {

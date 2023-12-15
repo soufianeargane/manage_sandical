@@ -19,6 +19,13 @@ const style = {
     p: 4,
 };
 
+const defaultValues = {
+    owner: "",
+    building: "",
+    number: "",
+    status: "",
+};
+
 function BasicModal({ setInserted, inserted }) {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
@@ -35,7 +42,17 @@ function BasicModal({ setInserted, inserted }) {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm({ resolver: yupResolver(schema) });
+        setValue,
+    } = useForm({ resolver: yupResolver(schema), defaultValues });
+
+    React.useEffect(() => {
+        if (open) {
+            setValue("owner", ""); // Reset owner field
+            setValue("building", ""); // Reset building field
+            setValue("number", ""); // Reset number field
+            setValue("status", ""); // Reset status field
+        }
+    }, [open, setValue]);
 
     const onSubmit = async (data) => {
         try {
