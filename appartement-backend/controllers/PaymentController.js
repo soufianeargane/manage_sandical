@@ -26,9 +26,10 @@ const createPayment = async (req, res) => {
 
 const getPaymentsByMonth = async (req, res) => {
     try {
+        console.log(req.query);
         const today = new Date();
-        const month = today.getMonth() + 1; // Months are zero-based
-        const year = today.getFullYear();
+        const month = req.query.MONTH || today.getMonth() + 1; // Months are zero-based
+        const year = req.query.YEAR || today.getFullYear();
 
         // Fetch all apartments
         const allApartments = await AppartementModel.find();

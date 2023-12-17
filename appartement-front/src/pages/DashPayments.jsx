@@ -82,9 +82,36 @@ function DashPayments() {
         const url = `http://localhost:3000/api/payment/single-payment/${appartmentId}`;
         window.open(url, "_blank"); // Opens the URL in a new tab
     };
+
+    const getData = async (e) => {
+        e.preventDefault();
+        const result = await axiosInstance.get(
+            "/api/payment/payments-by-month?MONTH=11&YEAR=2021",
+            {
+                withCredentials: true,
+            }
+        );
+        console.log(result.data);
+        setPaidApartments(result.data.paidApartments);
+        setUnPaidApartments(result.data.unpaidApartments);
+    };
     return (
         <div className="px-8 py-2">
             <div>
+                <form onSubmit={getData}>
+                    <div className="flex gap-4">
+                        <input
+                            className="border-2 border-gray-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none"
+                            type="text"
+                        />
+                        <input
+                            className="border-2 border-gray-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none"
+                            type="text"
+                        />
+
+                        <button>get</button>
+                    </div>
+                </form>
                 <div>
                     <h3>Non Paid Appartements For The current Month </h3>
                     <div className="mt-4">

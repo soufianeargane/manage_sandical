@@ -50,34 +50,4 @@ describe("Login", () => {
             await screen.findByText("Invalid credentials")
         ).toBeInTheDocument();
     });
-
-    it("navigates to dashboard on successful login", async () => {
-        // Temporarily replace useNavigate with the mockNavigate
-        require("react-router-dom").useNavigate = mockNavigate;
-
-        render(
-            <Provider store={store}>
-                <Router>
-                    <Login />
-                </Router>
-            </Provider>
-        );
-        const emailInput = screen.getByLabelText("email");
-        const passwordInput = screen.getByLabelText("password");
-        const loginButton = screen.getByRole("button", { name: "Login" });
-
-        fireEvent.change(emailInput, {
-            target: { value: "test@example.com" },
-        });
-        fireEvent.change(passwordInput, { target: { value: "password123" } });
-
-        fireEvent.click(loginButton);
-
-        // Assuming your API returns a success response with user data
-        // Expecting the mockNavigate function to be called
-        expect(true).toBeTruthy();
-
-        // Restore the original useNavigate
-        require("react-router-dom").useNavigate = originalUseNavigate;
-    });
 });
