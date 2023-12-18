@@ -26,6 +26,8 @@ function PayModal({
     selectedAppartement,
     setInserted,
     inserted,
+    setSuccess,
+    setError,
 }) {
     const [open, setOpen] = useState(false);
     const [localSelectedAppartement, setLocalSelectedAppartement] =
@@ -60,9 +62,11 @@ function PayModal({
             );
             if (result.data.success) {
                 setInserted(!inserted);
+                setSuccess(true);
             }
         } catch (error) {
             console.log(error);
+            setError(true);
         }
         // setInserted(!inserted);
         setUpdateModalOpen(false);

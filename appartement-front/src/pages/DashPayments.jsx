@@ -3,6 +3,7 @@ import axiosInstance from "../api/axiosInstance";
 import PayModal from "../components/shared/PayModal";
 import EditIcon from "@mui/icons-material/Edit";
 import LocalPrintshopIcon from "@mui/icons-material/LocalPrintshop";
+import ShowAlert from "../components/shared/ShowAlert";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 
@@ -12,6 +13,8 @@ function DashPayments() {
     const [unPaidApartments, setUnPaidApartments] = useState([]);
     const [updateModalOpen, setUpdateModalOpen] = useState(false);
     const [selectedAppartement, setSelectedAppartement] = useState(null);
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState(false);
     const paidTableRef = useRef(null);
     const nonPaidTableRef = useRef(null);
     useEffect(() => {
@@ -26,9 +29,11 @@ function DashPayments() {
                     }
                 );
                 setPaidApartments(result.data.paidApartments);
+                setError(false);
                 setUnPaidApartments(result.data.unpaidApartments);
             } catch (error) {
                 console.log(error);
+                setError(true);
             }
         }
 
@@ -43,39 +48,46 @@ function DashPayments() {
     };
 
     const generatePDF = () => {
-        const doc = new jsPDF();
+        try {
+            const doc = new jsPDF();
 
-        // Add content to the PDF
-        doc.text("Paid Apartments", 10, 10);
+            // Add content to the PDF
+            doc.text("Paid Apartments", 10, 10);
 
-        // Remove last column (Action) from the paidTable
-        const paidTableClone = paidTableRef.current.cloneNode(true);
-        paidTableClone.querySelector("thead tr").deleteCell(-1);
-        Array.from(paidTableClone.querySelectorAll("tbody tr")).forEach((row) =>
-            row.deleteCell(-1)
-        );
+            // Remove last column (Action) from the paidTable
+            const paidTableClone = paidTableRef.current.cloneNode(true);
+            paidTableClone.querySelector("thead tr").deleteCell(-1);
+            Array.from(paidTableClone.querySelectorAll("tbody tr")).forEach(
+                (row) => row.deleteCell(-1)
+            );
 
-        doc.autoTable({
-            html: paidTableClone,
-        });
+            doc.autoTable({
+                html: paidTableClone,
+            });
 
-        // Add spacing between tables
-        doc.text("Non-Paid Apartments", 10, doc.autoTable.previous.finalY + 20);
+            // Add spacing between tables
+            doc.text(
+                "Non-Paid Apartments",
+                10,
+                doc.autoTable.previous.finalY + 20
+            );
 
-        // Remove last column (Action) from the nonPaidTable
-        const nonPaidTableClone = nonPaidTableRef.current.cloneNode(true);
-        nonPaidTableClone.querySelector("thead tr").deleteCell(-1);
-        Array.from(nonPaidTableClone.querySelectorAll("tbody tr")).forEach(
-            (row) => row.deleteCell(-1)
-        );
+            // Remove last column (Action) from the nonPaidTable
+            const nonPaidTableClone = nonPaidTableRef.current.cloneNode(true);
+            nonPaidTableClone.querySelector("thead tr").deleteCell(-1);
+            Array.from(nonPaidTableClone.querySelectorAll("tbody tr")).forEach(
+                (row) => row.deleteCell(-1)
+            );
 
-        doc.autoTable({
-            html: nonPaidTableClone,
-            startY: doc.autoTable.previous.finalY + 25,
-        });
-
-        // Save the PDF
-        doc.save("apartments_report.pdf");
+            doc.autoTable({
+                html: nonPaidTableClone,
+                startY: doc.autoTable.previous.finalY + 25,
+            });
+            doc.save("apartments_report.pdf");
+        } catch (error) {
+            console.log(error);
+            setError(true);
+        }
     };
 
     const handleButtonClick = (appartmentId) => {
@@ -85,18 +97,41 @@ function DashPayments() {
 
     const getData = async (e) => {
         e.preventDefault();
-        const result = await axiosInstance.get(
-            "/api/payment/payments-by-month?MONTH=11&YEAR=2021",
-            {
-                withCredentials: true,
-            }
-        );
-        console.log(result.data);
-        setPaidApartments(result.data.paidApartments);
-        setUnPaidApartments(result.data.unpaidApartments);
+        try {
+            const result = await axiosInstance.get(
+                "/api/payment/payments-by-month?MONTH=11&YEAR=2021",
+                {
+                    withCredentials: true,
+                }
+            );
+            console.log(result.data);
+            setPaidApartments(result.data.paidApartments);
+            setUnPaidApartments(result.data.unpaidApartments);
+        } catch (error) {
+            console.log(error);
+            setError(true);
+        }
     };
     return (
         <div className="px-8 py-2">
+            <div className="mb-4">
+                {success && (
+                    <ShowAlert
+                        severity="success"
+                        title="Success"
+                        message="operation went  successfully"
+                        setSuccess={setSuccess}
+                    />
+                )}
+                {error && (
+                    <ShowAlert
+                        severity="error"
+                        title="Error"
+                        message="Something went wrong"
+                        setSuccess={setError}
+                    />
+                )}
+            </div>
             <div>
                 <form onSubmit={getData}>
                     <div className="flex gap-4">
@@ -188,6 +223,8 @@ function DashPayments() {
                                 selectedAppartement={selectedAppartement}
                                 opened={updateModalOpen}
                                 setUpdateModalOpen={setUpdateModalOpen}
+                                setSuccess={setSuccess}
+                                setError={setError}
                             />
                         </div>
                     </div>

@@ -26,6 +26,8 @@ function UpdateModal({
     selectedAppartement,
     setInserted,
     inserted,
+    setSuccess,
+    setError,
 }) {
     const [open, setOpen] = useState(false);
     const [localSelectedAppartement, setLocalSelectedAppartement] =
@@ -66,9 +68,12 @@ function UpdateModal({
                 }
             );
             setUpdateModalOpen(false);
+            setSuccess(true);
             setInserted(!inserted);
         } catch (error) {
             console.log(error);
+            setError(true);
+            setUpdateModalOpen(false);
         }
     };
 

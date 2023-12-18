@@ -26,7 +26,7 @@ const defaultValues = {
     status: "",
 };
 
-function BasicModal({ setInserted, inserted }) {
+function BasicModal({ setInserted, inserted, setSuccess, setError }) {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -63,9 +63,11 @@ function BasicModal({ setInserted, inserted }) {
                     withCredentials: true,
                 }
             );
+            setSuccess(true);
             setInserted(!inserted);
         } catch (error) {
             console.log(error);
+            setError(true);
         }
         setOpen(false);
     };

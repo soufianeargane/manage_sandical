@@ -2,10 +2,13 @@ import BasicModal from "../components/shared/Modal";
 import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import UpdateModal from "../components/shared/UpdateModal";
+import ShowAlert from "../components/shared/ShowAlert";
 
 function DashAppartements() {
     const [appartements, setAppartements] = useState([]);
     const [selectedAppartement, setSelectedAppartement] = useState(null);
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState(false);
     const [inserted, setInserted] = useState(false);
     const [updateModalOpen, setUpdateModalOpen] = useState(false);
     useEffect(() => {
@@ -18,6 +21,7 @@ function DashAppartements() {
                 setAppartements(result.data.data);
             } catch (error) {
                 console.log(error);
+                setError(true);
             }
         }
 
@@ -38,9 +42,11 @@ function DashAppartements() {
             );
             if (result.data.success) {
                 setInserted(!inserted);
+                setSuccess(true);
             }
         } catch (error) {
             console.log(error);
+            setError(true);
         }
     };
 
@@ -52,10 +58,33 @@ function DashAppartements() {
     return (
         <div>
             <div>
-                <BasicModal setInserted={setInserted} inserted={inserted} />
+                <BasicModal
+                    setSuccess={setSuccess}
+                    setError={setError}
+                    setInserted={setInserted}
+                    inserted={inserted}
+                />
             </div>
             <div>
                 <div className="relative w-full overflow-x-auto px-20 ">
+                    <div className="mb-4">
+                        {success && (
+                            <ShowAlert
+                                severity="success"
+                                title="Success"
+                                message="operation went  successfully"
+                                setSuccess={setSuccess}
+                            />
+                        )}
+                        {error && (
+                            <ShowAlert
+                                severity="error"
+                                title="Error"
+                                message="Something went wrong"
+                                setSuccess={setError}
+                            />
+                        )}
+                    </div>
                     <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-2">
                         <thead className="text-xs text-center text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
@@ -129,6 +158,8 @@ function DashAppartements() {
                         selectedAppartement={selectedAppartement}
                         setInserted={setInserted}
                         inserted={inserted}
+                        setSuccess={setSuccess}
+                        setError={setError}
                     />{" "}
                 </div>
             </div>
