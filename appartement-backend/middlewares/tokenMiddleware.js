@@ -5,7 +5,7 @@ function checkTokenMiddleware(req, res, next) {
     if (!token)
         return res
             .status(401)
-            .json({ error: "Access denied, u need to log in hhhh" });
+            .json({ error: "Access denied, u need to log in " });
 
     // verify token
     const decoded_user = validateToken(token);

@@ -4,6 +4,7 @@ import PayModal from "../components/shared/PayModal";
 import EditIcon from "@mui/icons-material/Edit";
 import LocalPrintshopIcon from "@mui/icons-material/LocalPrintshop";
 import ShowAlert from "../components/shared/ShowAlert";
+import EditModal from "../components/shared/EditModal";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 
@@ -12,6 +13,7 @@ function DashPayments() {
     const [inserted, setInserted] = useState(false);
     const [unPaidApartments, setUnPaidApartments] = useState([]);
     const [updateModalOpen, setUpdateModalOpen] = useState(false);
+    const [editPaymentModalOpen, setEditPaymentModalOpen] = useState(false);
     const [selectedAppartement, setSelectedAppartement] = useState(null);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState(false);
@@ -47,6 +49,11 @@ function DashPayments() {
     const openModal = (apartment) => {
         setSelectedAppartement(apartment);
         setUpdateModalOpen(true);
+    };
+
+    const openEditModal = (apartment) => {
+        setSelectedAppartement(apartment);
+        setEditPaymentModalOpen(true);
     };
 
     const generatePDF = () => {
@@ -245,6 +252,16 @@ function DashPayments() {
                                 month={month}
                                 year={year}
                             />
+
+                            <EditModal
+                                opened={editPaymentModalOpen}
+                                setUpdateModalOpen={setEditPaymentModalOpen}
+                                setSuccess={setSuccess}
+                                setError={setError}
+                                selectedAppartement={selectedAppartement}
+                                inserted={inserted}
+                                setInserted={setInserted}
+                            />
                         </div>
                     </div>
                 </div>
@@ -315,7 +332,14 @@ function DashPayments() {
                                                 <td className="px-6 py-4">
                                                     <div className="flex justify-center gap-3">
                                                         <div>
-                                                            <button className="hover:text-blue-500 px-2 py-1 hover:bg-gray-100 rounded-full">
+                                                            <button
+                                                                className="hover:text-blue-500 px-2 py-1 hover:bg-gray-100 rounded-full"
+                                                                onClick={() =>
+                                                                    openEditModal(
+                                                                        appartement
+                                                                    )
+                                                                }
+                                                            >
                                                                 <EditIcon />
                                                             </button>
                                                         </div>

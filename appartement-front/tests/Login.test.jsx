@@ -1,15 +1,9 @@
-import React from "react";
 import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Login } from "../src/pages/Login";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "../src/slices/store";
-
-// Manually create a mock for useNavigate
-const mockNavigate = () => {};
-// Save the original useNavigate to restore it later
-const originalUseNavigate = require("react-router-dom").useNavigate;
 
 describe("Login", () => {
     it("renders without error", () => {

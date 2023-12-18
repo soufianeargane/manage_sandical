@@ -1,13 +1,22 @@
-FROM node:18-alpine
+# FROM node:14
+# WORKDIR /app_frontend
+# COPY package.json .
+# RUN npm install --force
+# COPY . .
+# EXPOSE 80/tcp
 
-WORKDIR /app_frontend
+FROM node:14
 
-COPY package.json .
+WORKDIR /app
 
-RUN npm install --force
+COPY package*.json ./
+
+RUN npm install
 
 COPY . .
 
-EXPOSE 80/tcp
+RUN npm run build
+
+EXPOSE 80
 
 CMD ["npm", "run", "dev"]

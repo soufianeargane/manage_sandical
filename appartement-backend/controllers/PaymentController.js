@@ -152,8 +152,31 @@ function generateTable(doc, payment) {
     doc.text(`${payment.amount}`, 300, tableTop + 25);
 }
 
+const updatePayment = async (req, res) => {
+    try {
+        const { amount } = req.body;
+        const payment_id = req.params.id;
+
+        const payment = await PaymentModel.findOneAndUpdate(
+            { _id: payment_id },
+            { amount },
+            { new: true }
+        );
+
+        if (!payment) {
+            return res.status(404).send("Payment not found");
+        }
+
+        res.json({ success: "Payment updated successfully", payment });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Something went wrong" });
+    }
+};
+
 module.exports = {
     createPayment,
     getPaymentsByMonth,
     getSinglePayment,
+    updatePayment,
 };

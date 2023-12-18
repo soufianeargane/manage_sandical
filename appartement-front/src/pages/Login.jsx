@@ -57,11 +57,12 @@ export const Login = () => {
                     navigate("/dash/appartements");
                 } catch (error) {
                     console.log(error);
+                    setError("try again");
                 }
             })
             .catch((error) => {
-                console.log(error.response.data.error);
-                setError(error.response.data.error);
+                console.log(error);
+                setError("try again");
             });
     };
 
