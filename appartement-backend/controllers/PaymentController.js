@@ -5,10 +5,12 @@ const PDFDocument = require("pdfkit");
 const createPayment = async (req, res) => {
     try {
         const { amount, apartmentId } = req.body;
+        console.log(req.body);
 
         const today = new Date();
-        const month = today.getMonth() + 1; // Months are zero-based
-        const year = today.getFullYear();
+        const month = parseInt(req.body.month) || today.getMonth() + 1; // Months are zero-based
+        const year = parseInt(req.body.year) || today.getFullYear();
+        console.log(month, year);
 
         const payment = await PaymentModel.create({
             amount,
@@ -26,7 +28,6 @@ const createPayment = async (req, res) => {
 
 const getPaymentsByMonth = async (req, res) => {
     try {
-        console.log(req.query);
         const today = new Date();
         const month = req.query.MONTH || today.getMonth() + 1; // Months are zero-based
         const year = req.query.YEAR || today.getFullYear();

@@ -28,6 +28,8 @@ function PayModal({
     inserted,
     setSuccess,
     setError,
+    month,
+    year,
 }) {
     const [open, setOpen] = useState(false);
     const [localSelectedAppartement, setLocalSelectedAppartement] =
@@ -50,8 +52,12 @@ function PayModal({
     }, [selectedAppartement]);
 
     const onSubmit = async (data) => {
-        const newData = { ...data, apartmentId: localSelectedAppartement._id };
-        console.log(newData);
+        const newData = {
+            ...data,
+            apartmentId: localSelectedAppartement._id,
+            month: month,
+            year: year,
+        };
         try {
             let result = await axiosInstance.post(
                 "api/payment/create",

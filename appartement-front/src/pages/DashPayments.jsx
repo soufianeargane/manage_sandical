@@ -17,6 +17,8 @@ function DashPayments() {
     const [error, setError] = useState(false);
     const paidTableRef = useRef(null);
     const nonPaidTableRef = useRef(null);
+    const [month, setMonth] = useState("");
+    const [year, setYear] = useState("");
     useEffect(() => {
         document.title = "Payments";
 
@@ -99,7 +101,7 @@ function DashPayments() {
         e.preventDefault();
         try {
             const result = await axiosInstance.get(
-                "/api/payment/payments-by-month?MONTH=11&YEAR=2021",
+                `/api/payment/payments-by-month?MONTH=${month}&YEAR=${year}`,
                 {
                     withCredentials: true,
                 }
@@ -134,21 +136,36 @@ function DashPayments() {
             </div>
             <div>
                 <form onSubmit={getData}>
-                    <div className="flex gap-4">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-700 dark:text-white">
+                            Get Appartements By Month And Year (Default is this
+                            month)
+                        </h1>
+                    </div>
+                    <div className="flex gap-4 mb-4">
                         <input
                             className="border-2 border-gray-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none"
-                            type="text"
+                            type="number"
+                            placeholder="Month"
+                            onChange={(e) => setMonth(e.target.value)}
                         />
                         <input
                             className="border-2 border-gray-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none"
-                            type="text"
+                            type="number"
+                            placeholder="Year"
+                            onChange={(e) => setYear(e.target.value)}
                         />
 
                         <button>get</button>
                     </div>
                 </form>
                 <div>
-                    <h3>Non Paid Appartements For The current Month </h3>
+                    <h3>
+                        Non Paid Appartements For The{" "}
+                        {month === ""
+                            ? "current Month"
+                            : `month ${month} ${year}`}{" "}
+                    </h3>
                     <div className="mt-4">
                         <div className="relative w-full overflow-x-auto px-12 ">
                             <table
@@ -225,12 +242,19 @@ function DashPayments() {
                                 setUpdateModalOpen={setUpdateModalOpen}
                                 setSuccess={setSuccess}
                                 setError={setError}
+                                month={month}
+                                year={year}
                             />
                         </div>
                     </div>
                 </div>
                 <div className="mt-8">
-                    <h3>Paid Appartements For The current Month</h3>
+                    <h3>
+                        Paid Appartements For The{" "}
+                        {month === ""
+                            ? "current Month"
+                            : `month ${month} ${year}`}{" "}
+                    </h3>
                     <div className="mt-4">
                         <div className="relative w-full overflow-x-auto px-12 ">
                             <table
