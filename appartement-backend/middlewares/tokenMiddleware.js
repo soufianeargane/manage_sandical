@@ -1,4 +1,5 @@
 const validateToken = require("../validators/validateToken");
+
 function checkTokenMiddleware(req, res, next) {
     const token = req.cookies["authToken"];
 

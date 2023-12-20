@@ -85,6 +85,9 @@ async function login(req, res) {
 
     // Create and assign a token
     const token = jwt.sign({ returnUser }, process.env.TOKEN_SECRET);
+    // const token = jwt.sign({ returnUser }, process.env.TOKEN_SECRET, {
+    //     expiresIn: "24h",
+    // });
 
     res.cookie("authToken", token, {
         httpOnly: true,
