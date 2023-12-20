@@ -24,7 +24,7 @@ let mailOptions = {
     from: "your-email@gmail.com",
     to: "recipient@example.com",
     subject: "Test Email",
-    text: "a push has been made to your repo !",
+    text: "a push has been made to your repo and tests run successfully !",
 };
 
 sendMail(mailOptions);
